@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getTokenAndUserId, getHeadersWithToken, getMarathonHeaders, generateCheckinEncryptedData, testToken } from './lib/new_auth.js'
+import { getTokenAndUserId, getHeadersWithToken, generateCheckinEncryptedData, testToken } from './lib/new_auth.js'
 import sign from './lib/shangma_utils.js'
 import dotenv from 'dotenv'
 
