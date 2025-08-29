@@ -5,21 +5,31 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+// 调试模式开关
+const DEBUG_MODE = process.env.DEBUG_MODE === 'true' || false
+
+// 调试日志函数
+function debugLog(...args) {
+  if (DEBUG_MODE) {
+    console.log(...args)
+  }
+}
+
 async function newSignIn() {
   try {
     // 1. 获取token和用户ID
-    console.log('Getting token and user ID...')
+    debugLog('Getting token and user ID...')
     const { token, userId } = await getTokenAndUserId()
-    console.log('Token obtained:', token)
-    console.log('User ID:', userId)
+    debugLog('Token obtained:', token)
+    debugLog('User ID:', userId)
 
     // 2. 测试token是否有效并获取积分信息
-    console.log('Testing token and getting points info...')
+    debugLog('Testing token and getting points info...')
     const isTokenValid = await testToken(token)
     if (!isTokenValid) {
       throw new Error('Token is not valid')
     }
-    console.log('Token is valid')
+    debugLog('Token is valid')
 
     // 3. 检查是否已经签到
     const headers = getHeadersWithToken(token)
@@ -32,10 +42,10 @@ async function newSignIn() {
     const pointsResponse = await axios.request(pointsConfig)
     const pointsData = pointsResponse.data.data
 
-    console.log('Points info:', JSON.stringify(pointsData, null, 2))
+    debugLog('Points info:', JSON.stringify(pointsData, null, 2))
 
     if (pointsData.checkinStatus === 1) {
-      console.log('Already signed in today!')
+      debugLog('Already signed in today!')
       return {
         code: 5001,
         msg: 'Already signed in today',
@@ -44,7 +54,7 @@ async function newSignIn() {
     }
 
     // 4. 使用正确的签到API
-    console.log('Attempting sign in with correct API...')
+    debugLog('Attempting sign in with correct API...')
     const checkinEncryptedData = generateCheckinEncryptedData()
 
     const signInConfig = {
@@ -57,18 +67,18 @@ async function newSignIn() {
       }
     }
 
-    console.log('Sending checkin request...')
+    debugLog('Sending checkin request...')
     const response = await axios.request(signInConfig)
-    console.log('Checkin response:', JSON.stringify(response.data, null, 2))
+    debugLog('Checkin response:', JSON.stringify(response.data, null, 2))
 
     if (response.data.code === 0) {
-      console.log('Sign in successful!')
+      debugLog('Sign in successful!')
       return response.data
     } else if (response.data.code === 5001) {
-      console.log('Already signed in today')
+      debugLog('Already signed in today')
       return response.data
     } else {
-      console.log('Checkin API failed, trying old API...')
+      debugLog('Checkin API failed, trying old API...')
     }
 
   } catch (error) {
