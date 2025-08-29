@@ -1,10 +1,10 @@
-name: Run Auto Sign 
+name: Run Auto Sign
 
 on:
   workflow_dispatch:
   schedule:
     # UTC time
-    - cron: "0 0 * * *"
+    - cron: "0 09 * * *"
 
 env:
   SM_USERNAME: ${{ secrets.SM_USERNAME }}
@@ -25,7 +25,7 @@ jobs:
         id: build
         run: |
           npm install
-      - name: Run 
+      - name: Run
         id: run
         run: |
           node main.js 
